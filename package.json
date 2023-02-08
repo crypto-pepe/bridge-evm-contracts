@@ -1,0 +1,38 @@
+{
+  "name": "bridge-evm-contracts",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.6",
+    "@nomicfoundation/hardhat-toolbox": "^1.0.2",
+    "@nomiclabs/hardhat-solhint": "^2.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.17.0",
+    "@typescript-eslint/parser": "^5.17.0",
+    "allure-commandline": "^2.18.1",
+    "allure-mocha": "^2.0.0-beta.9",
+    "@defi-wonderland/smock": "^2.3.4",
+    "chai": "^4.3.6",
+    "dotenv": "^8.6.0",
+    "envalid": "^7.3.1",
+    "eslint": "^8.12.0",
+    "eslint-plugin-import": "^2.25.4",
+    "hardhat": "^2.10.1",
+    "hardhat-deploy": "^0.11.15",
+    "hardhat-gas-reporter": "^1.0.8",
+    "mocha": "^10.0.0",
+    "mocha-junit-reporter": "^2.0.2",
+    "mocha-multi-reporters": "^1.5.1",
+    "relax-steps-allure": "^0.0.9",
+    "ts-mocha": "^10.0.0",
+    "ts-node": "^10.7.0",
+    "typed-numbers": "^1.0.5",
+    "typescript": "^4.1.3"
+  },
+  "scripts": {
+    "compile": "hardhat compile",
+    "check": "hardhat check",
+    "coverage": "hardhat coverage",
+    "test": "hardhat test",
+    "clean": "rm -rf ./allure-results/*",
+    "allure-report": "allure generate ./allure-results -c && allure open"
+  }
+}
