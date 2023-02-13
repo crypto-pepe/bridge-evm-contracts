@@ -2,21 +2,21 @@ import { ethers } from "hardhat";
 import { MULTISIG_TTL_DEFAULT } from "../test/data/constants";
 import { stepInit } from "./multisig";
 
-export const deployMultisigFixtureOneOwner = async () => {
+export const deployMultisigFixtureOneAdmin = async () => {
   return await deployMultisig();
 };
 
-export const deployMultisigOneOwnerWithInit = async () => {
-  const ret = await deployMultisigFixtureOneOwner();
-  await stepInit(ret.multisig, [ret.owner.address], 1, MULTISIG_TTL_DEFAULT);
+export const deployMultisigOneAdminWithInit = async () => {
+  const ret = await deployMultisigFixtureOneAdmin();
+  await stepInit(ret.multisig, [ret.admin.address], 1, MULTISIG_TTL_DEFAULT);
   return ret;
 };
 
-export const deployMultisigFixtureManyOwners = async () => {
-  const ret = await deployMultisigFixtureOneOwner();
+export const deployMultisigFixtureManyAdmins = async () => {
+  const ret = await deployMultisigFixtureOneAdmin();
   await stepInit(
     ret.multisig,
-    [ret.owner.address, ret.other.address],
+    [ret.admin.address, ret.other.address],
     2,
     MULTISIG_TTL_DEFAULT
   );
@@ -24,13 +24,13 @@ export const deployMultisigFixtureManyOwners = async () => {
 };
 
 export const deployMultisig = async () => {
-  const [owner, other, third] = await ethers.getSigners();
+  const [admin, other, third] = await ethers.getSigners();
   const Multisig = await ethers.getContractFactory("Multisig");
   const multisig = await Multisig.deploy();
 
   return {
     multisig,
-    owner,
+    admin,
     other,
     third,
     Multisig,

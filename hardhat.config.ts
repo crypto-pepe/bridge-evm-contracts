@@ -3,13 +3,14 @@ import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-gas-reporter";
 import "hardhat-deploy";
 
-const config: HardhatUserConfig = {
+// const config: HardhatUserConfig = {
+const config: any = {
   solidity: {
     version: "0.8.18",
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 999999,
       },
     },
   },

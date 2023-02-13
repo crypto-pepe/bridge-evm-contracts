@@ -1,0 +1,38 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Initializable.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.18;\n\nabstract contract Initializable {\n    bool internal isInited;\n\n    modifier whenInitialized() {\n        require(isInited, \"not initialized\");\n        _;\n    }\n\n    modifier whenNotInitialized() {\n        require(!isInited, \"already initialized\");\n        _;\n    }\n}\n"
+    },
+    "contracts/Multisig.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.18;\n\nimport \".//Initializable.sol\";\n\ncontract Multisig is Initializable {\n    struct Transaction {\n        address dst;\n        uint256 value;\n        bytes data;\n        bool isExecuted;\n        uint256 blockNumber;\n    }\n\n    uint128 public quorum;\n    uint128 public ttl;\n    uint256 public txsCount;\n    mapping(uint256 => Transaction) public txs;\n    mapping(uint256 => mapping(address => bool)) public confirms;\n    mapping(address => bool) public isAdmin;\n    address[] public admins;\n\n    event Submission(uint256 indexed txId);\n    event Confirmation(address indexed sender, uint256 indexed txId);\n    event Revocation(address indexed sender, uint256 indexed txId);\n    event Execution(uint256 indexed txId, address caller);\n    event QuorumChange(uint128 quorum);\n    event AdminAddition(address indexed admin);\n    event AdminRemoval(address indexed admin);\n\n    modifier onlySelf() {\n        require(msg.sender == address(this), \"only self\");\n        _;\n    }\n\n    modifier onlyAdmin(address admin_) {\n        require(isAdmin[admin_], \"only admin\");\n        _;\n    }\n\n    modifier whenNotConfirmed(uint256 txId_, address admin_) {\n        require(!confirms[txId_][admin_], \"tx is confirmed\");\n        _;\n    }\n\n    modifier whenNotExecuted(uint256 txId_) {\n        require(!txs[txId_].isExecuted, \"tx is executed\");\n        _;\n    }\n\n    modifier quorumIsValid(uint256 adminsCount_, uint256 quorum_) {\n        require(\n            quorum_ <= adminsCount_ && quorum_ != 0 && adminsCount_ != 0,\n            \"invalid quorum\"\n        );\n        _;\n    }\n\n    function init(\n        address[] memory admins_,\n        uint128 quorum_,\n        uint128 ttl_\n    ) external quorumIsValid(admins_.length, quorum_) whenNotInitialized {\n        for (uint256 i = 0; i < admins_.length; i++) {\n            address admin = admins_[i];\n            require(admin != address(0), \"zero address\");\n            require(!isAdmin[admin], \"admin is duplicated\");\n            isAdmin[admin] = true;\n        }\n\n        admins = admins_;\n        quorum = quorum_;\n        ttl = ttl_;\n        isInited = true;\n    }\n\n    receive() external payable {}\n\n    function addAdmin(\n        address admin_\n    ) external onlySelf quorumIsValid(admins.length + 1, quorum) {\n        require(admin_ != address(0), \"zero address\");\n        require(!isAdmin[admin_], \"only not admin\");\n        isAdmin[admin_] = true;\n        admins.push(admin_);\n        emit AdminAddition(admin_);\n    }\n\n    function removeAdmin(address admin_) external onlySelf onlyAdmin(admin_) {\n        isAdmin[admin_] = false;\n        for (uint256 i = 0; i < admins.length - 1; i++) {\n            if (admins[i] == admin_) {\n                admins[i] = admins[admins.length - 1];\n                break;\n            }\n        }\n        admins.pop();\n        if (quorum > admins.length) {\n            setQuorum(uint128(admins.length));\n        }\n        emit AdminRemoval(admin_);\n    }\n\n    function setQuorum(\n        uint128 quorum_\n    ) public onlySelf quorumIsValid(admins.length, quorum_) {\n        quorum = quorum_;\n        emit QuorumChange(quorum_);\n    }\n\n    function submitTransaction(\n        address dst_,\n        uint256 value_,\n        bytes calldata calldata_\n    ) external onlyAdmin(msg.sender) returns (uint256 txId) {\n        require(dst_ != address(0), \"zero address\");\n        txId = txsCount;\n        txs[txId] = Transaction({\n            dst: dst_,\n            value: value_,\n            data: calldata_,\n            isExecuted: false,\n            blockNumber: block.number\n        });\n        txsCount = txId + 1;\n        emit Submission(txId);\n    }\n\n    function confirmTransaction(\n        uint256 txId_\n    ) external onlyAdmin(msg.sender) whenNotConfirmed(txId_, msg.sender) {\n        require(txs[txId_].dst != address(0), \"txId is incorrect\");\n        confirms[txId_][msg.sender] = true;\n        emit Confirmation(msg.sender, txId_);\n    }\n\n    function revokeConfirmation(\n        uint256 txId_\n    ) external onlyAdmin(msg.sender) whenNotExecuted(txId_) {\n        require(confirms[txId_][msg.sender], \"tx is not confirmed\");\n        confirms[txId_][msg.sender] = false;\n        emit Revocation(msg.sender, txId_);\n    }\n\n    function executeTransaction(\n        uint256 txId_\n    ) external whenNotExecuted(txId_) returns (bytes memory) {\n        require(isConfirmed(txId_), \"is not confirmed\");\n        Transaction storage tx_ = txs[txId_];\n        require(tx_.blockNumber + ttl >= block.number, \"tx too old\");\n        tx_.isExecuted = true;\n        emit Execution(txId_, msg.sender);\n        (bool success_, bytes memory data_) = tx_.dst.call{value: tx_.value}(\n            tx_.data\n        );\n        if (success_) {\n            return data_;\n        } else {\n            if (data_.length > 0) {\n                /// @solidity memory-safe-assembly\n                assembly {\n                    let returndata_size := mload(data_)\n                    revert(add(32, data_), returndata_size)\n                }\n            } else {\n                revert(\"no error\");\n            }\n        }\n    }\n\n    function isConfirmed(uint256 txId_) public view returns (bool) {\n        uint128 count = 0;\n        for (uint256 i = 0; i < admins.length; i++) {\n            if (confirms[txId_][admins[i]]) count++;\n            if (count >= quorum) return true;\n        }\n\n        return false;\n    }\n\n    function getConfirmationsCount(\n        uint256 txId_\n    ) external view returns (uint256 count) {\n        for (uint256 i = 0; i < admins.length; i++)\n            if (confirms[txId_][admins[i]]) count++;\n    }\n\n    function getConfirmations(\n        uint256 txId_\n    ) external view returns (address[] memory confirms_) {\n        uint256 i = 0;\n        uint256 count = 0;\n        address[] memory tmp = new address[](admins.length);\n        for (; i < admins.length; i++) {\n            address admin = admins[i];\n            if (confirms[txId_][admin]) {\n                tmp[count] = admin;\n                count++;\n            }\n        }\n\n        confirms_ = new address[](count);\n        for (i = 0; i < count; i++) confirms_[i] = tmp[i];\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 999999
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

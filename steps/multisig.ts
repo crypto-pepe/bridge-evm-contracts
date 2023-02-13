@@ -50,12 +50,12 @@ export const setQuorumEncode = (multisig: Multisig, quorum = 1) =>
 
 export const stepInit = async (
   multisig_: Multisig,
-  owners_: string[],
+  admins_: string[],
   quorum_: number,
   ttl_: number
 ) => {
-  await multisig_.init(owners_, quorum_, ttl_);
-  expect(await multisig_.owners(0)).to.be.equal(owners_[0]);
+  await multisig_.init(admins_, quorum_, ttl_);
+  expect(await multisig_.admins(0)).to.be.equal(admins_[0]);
   expect(await multisig_.quorum()).to.be.equal(quorum_);
   expect(await multisig_.ttl()).to.be.equal(ttl_);
 };

@@ -17,29 +17,29 @@ contract Multisig is Initializable {
     uint256 public txsCount;
     mapping(uint256 => Transaction) public txs;
     mapping(uint256 => mapping(address => bool)) public confirms;
-    mapping(address => bool) public isOwner;
-    address[] public owners;
+    mapping(address => bool) public isAdmin;
+    address[] public admins;
 
     event Submission(uint256 indexed txId);
     event Confirmation(address indexed sender, uint256 indexed txId);
     event Revocation(address indexed sender, uint256 indexed txId);
     event Execution(uint256 indexed txId, address caller);
     event QuorumChange(uint128 quorum);
-    event OwnerAddition(address indexed owner);
-    event OwnerRemoval(address indexed owner);
+    event AdminAddition(address indexed admin);
+    event AdminRemoval(address indexed admin);
 
     modifier onlySelf() {
         require(msg.sender == address(this), "only self");
         _;
     }
 
-    modifier onlyOwner(address owner_) {
-        require(isOwner[owner_], "only owner");
+    modifier onlyAdmin(address admin_) {
+        require(isAdmin[admin_], "only admin");
         _;
     }
 
-    modifier whenNotConfirmed(uint256 txId_, address owner_) {
-        require(!confirms[txId_][owner_], "tx is confirmed");
+    modifier whenNotConfirmed(uint256 txId_, address admin_) {
+        require(!confirms[txId_][admin_], "tx is confirmed");
         _;
     }
 
@@ -48,27 +48,27 @@ contract Multisig is Initializable {
         _;
     }
 
-    modifier quorumIsValid(uint256 ownersCount_, uint256 quorum_) {
+    modifier quorumIsValid(uint256 adminsCount_, uint256 quorum_) {
         require(
-            quorum_ <= ownersCount_ && quorum_ != 0 && ownersCount_ != 0,
+            quorum_ <= adminsCount_ && quorum_ != 0 && adminsCount_ != 0,
             "invalid quorum"
         );
         _;
     }
 
     function init(
-        address[] memory owners_,
+        address[] memory admins_,
         uint128 quorum_,
         uint128 ttl_
-    ) external quorumIsValid(owners_.length, quorum_) whenNotInitialized {
-        for (uint256 i = 0; i < owners_.length; i++) {
-            address owner = owners_[i];
-            require(owner != address(0), "zero address");
-            require(!isOwner[owner], "owner is duplicated");
-            isOwner[owner] = true;
+    ) external quorumIsValid(admins_.length, quorum_) whenNotInitialized {
+        for (uint256 i = 0; i < admins_.length; i++) {
+            address admin = admins_[i];
+            require(admin != address(0), "zero address");
+            require(!isAdmin[admin], "admin is duplicated");
+            isAdmin[admin] = true;
         }
 
-        owners = owners_;
+        admins = admins_;
         quorum = quorum_;
         ttl = ttl_;
         isInited = true;
@@ -76,34 +76,34 @@ contract Multisig is Initializable {
 
     receive() external payable {}
 
-    function addOwner(
-        address owner_
-    ) external onlySelf quorumIsValid(owners.length + 1, quorum) {
-        require(owner_ != address(0), "zero address");
-        require(!isOwner[owner_], "only not owner");
-        isOwner[owner_] = true;
-        owners.push(owner_);
-        emit OwnerAddition(owner_);
+    function addAdmin(
+        address admin_
+    ) external onlySelf quorumIsValid(admins.length + 1, quorum) {
+        require(admin_ != address(0), "zero address");
+        require(!isAdmin[admin_], "only not admin");
+        isAdmin[admin_] = true;
+        admins.push(admin_);
+        emit AdminAddition(admin_);
     }
 
-    function removeOwner(address owner_) external onlySelf onlyOwner(owner_) {
-        isOwner[owner_] = false;
-        for (uint256 i = 0; i < owners.length - 1; i++) {
-            if (owners[i] == owner_) {
-                owners[i] = owners[owners.length - 1];
+    function removeAdmin(address admin_) external onlySelf onlyAdmin(admin_) {
+        isAdmin[admin_] = false;
+        for (uint256 i = 0; i < admins.length - 1; i++) {
+            if (admins[i] == admin_) {
+                admins[i] = admins[admins.length - 1];
                 break;
             }
         }
-        owners.pop();
-        if (quorum > owners.length) {
-            setQuorum(uint128(owners.length));
+        admins.pop();
+        if (quorum > admins.length) {
+            setQuorum(uint128(admins.length));
         }
-        emit OwnerRemoval(owner_);
+        emit AdminRemoval(admin_);
     }
 
     function setQuorum(
         uint128 quorum_
-    ) public onlySelf quorumIsValid(owners.length, quorum_) {
+    ) public onlySelf quorumIsValid(admins.length, quorum_) {
         quorum = quorum_;
         emit QuorumChange(quorum_);
     }
@@ -112,7 +112,7 @@ contract Multisig is Initializable {
         address dst_,
         uint256 value_,
         bytes calldata calldata_
-    ) external onlyOwner(msg.sender) returns (uint256 txId) {
+    ) external onlyAdmin(msg.sender) returns (uint256 txId) {
         require(dst_ != address(0), "zero address");
         txId = txsCount;
         txs[txId] = Transaction({
@@ -128,7 +128,7 @@ contract Multisig is Initializable {
 
     function confirmTransaction(
         uint256 txId_
-    ) external onlyOwner(msg.sender) whenNotConfirmed(txId_, msg.sender) {
+    ) external onlyAdmin(msg.sender) whenNotConfirmed(txId_, msg.sender) {
         require(txs[txId_].dst != address(0), "txId is incorrect");
         confirms[txId_][msg.sender] = true;
         emit Confirmation(msg.sender, txId_);
@@ -136,7 +136,7 @@ contract Multisig is Initializable {
 
     function revokeConfirmation(
         uint256 txId_
-    ) external onlyOwner(msg.sender) whenNotExecuted(txId_) {
+    ) external onlyAdmin(msg.sender) whenNotExecuted(txId_) {
         require(confirms[txId_][msg.sender], "tx is not confirmed");
         confirms[txId_][msg.sender] = false;
         emit Revocation(msg.sender, txId_);
@@ -170,8 +170,8 @@ contract Multisig is Initializable {
 
     function isConfirmed(uint256 txId_) public view returns (bool) {
         uint128 count = 0;
-        for (uint256 i = 0; i < owners.length; i++) {
-            if (confirms[txId_][owners[i]]) count++;
+        for (uint256 i = 0; i < admins.length; i++) {
+            if (confirms[txId_][admins[i]]) count++;
             if (count >= quorum) return true;
         }
 
@@ -181,8 +181,8 @@ contract Multisig is Initializable {
     function getConfirmationsCount(
         uint256 txId_
     ) external view returns (uint256 count) {
-        for (uint256 i = 0; i < owners.length; i++)
-            if (confirms[txId_][owners[i]]) count++;
+        for (uint256 i = 0; i < admins.length; i++)
+            if (confirms[txId_][admins[i]]) count++;
     }
 
     function getConfirmations(
@@ -190,11 +190,11 @@ contract Multisig is Initializable {
     ) external view returns (address[] memory confirms_) {
         uint256 i = 0;
         uint256 count = 0;
-        address[] memory tmp = new address[](owners.length);
-        for (; i < owners.length; i++) {
-            address owner = owners[i];
-            if (confirms[txId_][owner]) {
-                tmp[count] = owner;
+        address[] memory tmp = new address[](admins.length);
+        for (; i < admins.length; i++) {
+            address admin = admins[i];
+            if (confirms[txId_][admin]) {
+                tmp[count] = admin;
                 count++;
             }
         }

@@ -9,7 +9,6 @@
     "@typescript-eslint/parser": "^5.17.0",
     "allure-commandline": "^2.18.1",
     "allure-mocha": "^2.0.0-beta.9",
-    "@defi-wonderland/smock": "^2.3.4",
     "chai": "^4.3.6",
     "dotenv": "^8.6.0",
     "envalid": "^7.3.1",

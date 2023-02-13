@@ -1,11 +1,12 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 
-const main: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
+// const main: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
+const main: any = async function(hre: any) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  const owners = [
+  const admins = [
     "0x20D1e919B0d5D7A3a24159559202359C1E130495",
     "0x6DF7F61fE3f8A034BCadF58A9Cb998f828fAdf7F",
     "0x89ACCe2C87f7Dfde7aF5518a4819E4e13Eb062C8",
@@ -19,12 +20,10 @@ const main: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     from: deployer,
     log: true,
     proxy: {
-      proxyContract: "OptimizedTransparentProxy",
-      owner: deployer,
       execute: {
         init: {
           methodName: "init",
-          args: [owners, quorum, txTTL],
+          args: [admins, quorum, txTTL],
         },
       },
     },
