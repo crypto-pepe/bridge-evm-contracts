@@ -1,5 +1,5 @@
 {
-  "address": "0x61dC2A74D1f4CC5d829C72c8A09ba6F921B6848E",
+  "address": "0xa85985F8ce064C7E144AE7F3233849230659F420",
   "abi": [
     {
       "anonymous": false,
@@ -127,64 +127,25 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
-          "internalType": "address",
-          "name": "admin",
-          "type": "address"
-        }
-      ],
-      "name": "AdminAddition",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "admin",
-          "type": "address"
-        }
-      ],
-      "name": "AdminRemoval",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
+          "indexed": false,
           "internalType": "address",
           "name": "sender",
           "type": "address"
         },
         {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "txId",
-          "type": "uint256"
-        }
-      ],
-      "name": "Confirmation",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "txId",
-          "type": "uint256"
+          "indexed": false,
+          "internalType": "address",
+          "name": "oldAdmin",
+          "type": "address"
         },
         {
           "indexed": false,
           "internalType": "address",
-          "name": "caller",
+          "name": "admin",
           "type": "address"
         }
       ],
-      "name": "Execution",
+      "name": "AdminUpdated",
       "type": "event"
     },
     {
@@ -192,68 +153,74 @@
       "inputs": [
         {
           "indexed": false,
-          "internalType": "uint128",
-          "name": "quorum",
-          "type": "uint128"
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
         }
       ],
-      "name": "QuorumChange",
+      "name": "Paused",
       "type": "event"
     },
     {
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "address",
           "name": "sender",
           "type": "address"
         },
         {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "txId",
-          "type": "uint256"
+          "indexed": false,
+          "internalType": "address",
+          "name": "oldPauser",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "pauser",
+          "type": "address"
         }
       ],
-      "name": "Revocation",
+      "name": "PauserUpdated",
       "type": "event"
     },
     {
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "txId",
-          "type": "uint256"
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
         }
       ],
-      "name": "Submission",
+      "name": "Unpaused",
       "type": "event"
     },
     {
       "inputs": [
         {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "name": "adapters",
+      "outputs": [
+        {
           "internalType": "address",
-          "name": "admin_",
+          "name": "",
           "type": "address"
         }
       ],
-      "name": "addAdmin",
-      "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "view",
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "admins",
+      "inputs": [],
+      "name": "admin",
       "outputs": [
         {
           "internalType": "address",
@@ -267,12 +234,12 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "txId_",
-          "type": "uint256"
+          "internalType": "address",
+          "name": "caller_",
+          "type": "address"
         }
       ],
-      "name": "confirmTransaction",
+      "name": "allow",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -280,17 +247,12 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
-        {
           "internalType": "address",
           "name": "",
           "type": "address"
         }
       ],
-      "name": "confirms",
+      "name": "allowance",
       "outputs": [
         {
           "internalType": "bool",
@@ -304,76 +266,22 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "txId_",
-          "type": "uint256"
+          "internalType": "address",
+          "name": "caller_",
+          "type": "address"
         }
       ],
-      "name": "executeTransaction",
-      "outputs": [
-        {
-          "internalType": "bytes",
-          "name": "",
-          "type": "bytes"
-        }
-      ],
+      "name": "disallow",
+      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "txId_",
-          "type": "uint256"
-        }
-      ],
-      "name": "getConfirmations",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "confirms_",
-          "type": "address[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "txId_",
-          "type": "uint256"
-        }
-      ],
-      "name": "getConfirmationsCount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "count",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address[]",
-          "name": "admins_",
-          "type": "address[]"
-        },
-        {
-          "internalType": "uint128",
-          "name": "quorum_",
-          "type": "uint128"
-        },
-        {
-          "internalType": "uint128",
-          "name": "ttl_",
-          "type": "uint128"
+          "internalType": "address",
+          "name": "admin_",
+          "type": "address"
         }
       ],
       "name": "init",
@@ -382,54 +290,104 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "isPaused",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "executionChainId_",
+          "type": "uint16"
+        },
+        {
+          "internalType": "string",
+          "name": "token_",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount_",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "recipient_",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "gaslessClaimReward_",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "referrer_",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "referrerFee_",
+          "type": "uint256"
+        }
+      ],
+      "name": "mintTokens",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pauser",
+      "outputs": [
         {
           "internalType": "address",
           "name": "",
           "type": "address"
         }
       ],
-      "name": "isAdmin",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
       "stateMutability": "view",
       "type": "function"
     },
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "txId_",
-          "type": "uint256"
-        }
-      ],
-      "name": "isConfirmed",
-      "outputs": [
+          "internalType": "uint16",
+          "name": "executionChainId_",
+          "type": "uint16"
+        },
         {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
+          "internalType": "address",
+          "name": "adapter_",
+          "type": "address"
         }
       ],
-      "stateMutability": "view",
+      "name": "setAdapter",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [],
-      "name": "quorum",
-      "outputs": [
-        {
-          "internalType": "uint128",
-          "name": "",
-          "type": "uint128"
-        }
-      ],
-      "stateMutability": "view",
+      "name": "unpause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -440,33 +398,7 @@
           "type": "address"
         }
       ],
-      "name": "removeAdmin",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "txId_",
-          "type": "uint256"
-        }
-      ],
-      "name": "revokeConfirmation",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint128",
-          "name": "quorum_",
-          "type": "uint128"
-        }
-      ],
-      "name": "setQuorum",
+      "name": "updateAdmin",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -475,94 +407,13 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "dst_",
+          "name": "pauser_",
           "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "value_",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "calldata_",
-          "type": "bytes"
         }
       ],
-      "name": "submitTransaction",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "txId",
-          "type": "uint256"
-        }
-      ],
+      "name": "updatePauser",
+      "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "ttl",
-      "outputs": [
-        {
-          "internalType": "uint128",
-          "name": "",
-          "type": "uint128"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "txs",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "dst",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
-        },
-        {
-          "internalType": "bool",
-          "name": "isExecuted",
-          "type": "bool"
-        },
-        {
-          "internalType": "uint256",
-          "name": "blockNumber",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "txsCount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -587,55 +438,55 @@
       "type": "constructor"
     }
   ],
-  "transactionHash": "0xad6fb357c357ac12c97a6f377f0ebe1c37613aa1da70dfc1777e4d55a686b4ab",
+  "transactionHash": "0xbd3cd137397bd9302f57d4d5cd7f120f611d5b2b7454ff6ee4d527dfd183d3e3",
   "receipt": {
     "to": null,
     "from": "0x9bA15E762398456ce03eAA382253b56Ed5dA882a",
-    "contractAddress": "0x61dC2A74D1f4CC5d829C72c8A09ba6F921B6848E",
-    "transactionIndex": 3,
-    "gasUsed": "941481",
-    "logsBloom": "0x00000000000000000000000000000000000000000000000000800000000000000000000000000000000400000000000000000000000000000000000000000000000008000000000000000000000000000001000000000000000000000000000000000000020200000000000000000800000000001000000000400001000000400000000000000000000080000000000000000000000000800000000000000000000000000000000000000000000200000000000000000000000200008000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000400000000000000000000000000000000000000000000",
-    "blockHash": "0x994d0e3aca738db14417867c5e5add42b8138123190facbf357cf5587d0ce6d0",
-    "transactionHash": "0xad6fb357c357ac12c97a6f377f0ebe1c37613aa1da70dfc1777e4d55a686b4ab",
+    "contractAddress": "0xa85985F8ce064C7E144AE7F3233849230659F420",
+    "transactionIndex": 4,
+    "gasUsed": "690622",
+    "logsBloom": "0x02000000000000000000000000004000000000000000000000800000000000000000000000000000000400000000000000000000000000000000000000000020000000000000000000000000000000000001000000000000000000000000000000000000020000000000000000000800000000000000000000000000000000400000000000000000000400000000000000000000000000000000000000000002000000000000000000000000004200000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000020000000000000000000000400000000000000800000000000000000400000000000",
+    "blockHash": "0x21617a3967314942fee33d04287296cf0f7916891c4831ee126ed3432eb93838",
+    "transactionHash": "0xbd3cd137397bd9302f57d4d5cd7f120f611d5b2b7454ff6ee4d527dfd183d3e3",
     "logs": [
       {
-        "transactionIndex": 3,
-        "blockNumber": 3055329,
-        "transactionHash": "0xad6fb357c357ac12c97a6f377f0ebe1c37613aa1da70dfc1777e4d55a686b4ab",
-        "address": "0x61dC2A74D1f4CC5d829C72c8A09ba6F921B6848E",
+        "transactionIndex": 4,
+        "blockNumber": 3055398,
+        "transactionHash": "0xbd3cd137397bd9302f57d4d5cd7f120f611d5b2b7454ff6ee4d527dfd183d3e3",
+        "address": "0xa85985F8ce064C7E144AE7F3233849230659F420",
         "topics": [
           "0x5570d70a002632a7b0b3c9304cc89efb62d8da9eca0dbd7752c83b7379068296",
           "0x0000000000000000000000000000000000000000000000000000000000000000",
-          "0x0000000000000000000000005cbdfcca17efc65d3c25d82725aa27922f69a7f4"
+          "0x000000000000000000000000060e907c1b1a886122fda920561b187e005d44b0"
         ],
         "data": "0x",
-        "logIndex": 1,
-        "blockHash": "0x994d0e3aca738db14417867c5e5add42b8138123190facbf357cf5587d0ce6d0"
+        "logIndex": 4,
+        "blockHash": "0x21617a3967314942fee33d04287296cf0f7916891c4831ee126ed3432eb93838"
       },
       {
-        "transactionIndex": 3,
-        "blockNumber": 3055329,
-        "transactionHash": "0xad6fb357c357ac12c97a6f377f0ebe1c37613aa1da70dfc1777e4d55a686b4ab",
-        "address": "0x61dC2A74D1f4CC5d829C72c8A09ba6F921B6848E",
+        "transactionIndex": 4,
+        "blockNumber": 3055398,
+        "transactionHash": "0xbd3cd137397bd9302f57d4d5cd7f120f611d5b2b7454ff6ee4d527dfd183d3e3",
+        "address": "0xa85985F8ce064C7E144AE7F3233849230659F420",
         "topics": [
           "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
           "0x0000000000000000000000000000000000000000000000000000000000000000",
-          "0x0000000000000000000000009ba15e762398456ce03eaa382253b56ed5da882a"
+          "0x00000000000000000000000061dc2a74d1f4cc5d829c72c8a09ba6f921b6848e"
         ],
         "data": "0x",
-        "logIndex": 2,
-        "blockHash": "0x994d0e3aca738db14417867c5e5add42b8138123190facbf357cf5587d0ce6d0"
+        "logIndex": 5,
+        "blockHash": "0x21617a3967314942fee33d04287296cf0f7916891c4831ee126ed3432eb93838"
       }
     ],
-    "blockNumber": 3055329,
-    "cumulativeGasUsed": "1037335",
+    "blockNumber": 3055398,
+    "cumulativeGasUsed": "1123842",
     "status": 1,
     "byzantium": true
   },
   "args": [
-    "0x5CBdFCcA17eFC65D3c25D82725aA27922f69a7f4",
-    "0x9bA15E762398456ce03eAA382253b56Ed5dA882a",
-    "0x2ab6131e000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000009d80000000000000000000000000000000000000000000000000000000000000000500000000000000000000000020d1e919b0d5d7a3a24159559202359c1e1304950000000000000000000000006df7f61fe3f8a034bcadf58a9cb998f828fadf7f00000000000000000000000089acce2c87f7dfde7af5518a4819e4e13eb062c800000000000000000000000066a42e8db672bbc1573be0b3ea8f6fd48d4d7a4e0000000000000000000000009ba15e762398456ce03eaa382253b56ed5da882a"
+    "0x060E907C1B1A886122FDA920561B187E005D44B0",
+    "0x61dC2A74D1f4CC5d829C72c8A09ba6F921B6848E",
+    "0x19ab453c00000000000000000000000061dc2a74d1f4cc5d829c72c8a09ba6f921b6848e"
   ],
   "numDeployments": 1,
   "solcInputHash": "41a8600e180880fe88609322a6b2ac21",
@@ -645,18 +496,10 @@
   "execute": {
     "methodName": "init",
     "args": [
-      [
-        "0x20D1e919B0d5D7A3a24159559202359C1E130495",
-        "0x6DF7F61fE3f8A034BCadF58A9Cb998f828fAdf7F",
-        "0x89ACCe2C87f7Dfde7aF5518a4819E4e13Eb062C8",
-        "0x66a42E8Db672bbC1573be0B3Ea8f6FD48d4d7A4e",
-        "0x9bA15E762398456ce03eAA382253b56Ed5dA882a"
-      ],
-      2,
-      40320
+      "0x61dC2A74D1f4CC5d829C72c8A09ba6F921B6848E"
     ]
   },
-  "implementation": "0x5CBdFCcA17eFC65D3c25D82725aA27922f69a7f4",
+  "implementation": "0x060E907C1B1A886122FDA920561B187E005D44B0",
   "devdoc": {
     "kind": "dev",
     "methods": {},

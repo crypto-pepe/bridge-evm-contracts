@@ -2,7 +2,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 
 // const main: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
-const main: any = async function(hre: any) {
+const main: DeployFunction = async function (hre: any) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
@@ -30,7 +30,8 @@ const main: any = async function(hre: any) {
   });
 };
 
-main.id = "multisig_deploy_sepolia";
-main.tags = ["Multisig", "sepolia", "ethereum"];
+main.id = "ethereum_sepolia_multisig_deploy";
+main.tags = ["ethereum", "sepolia", "Multisig"];
+main.dependencies = [];
 
 export default main;
