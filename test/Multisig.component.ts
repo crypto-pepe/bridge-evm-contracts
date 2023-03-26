@@ -1,6 +1,6 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect, use } from 'chai';
-import { MULTISIG_TTL_DEFAULT, ZERO_ADDRESS } from './data/constants';
+import { MULTISIG_TTL_DEFAULT } from './data/constants';
 import chaiAsPromised from 'chai-as-promised';
 import {
     expectConfirmTransaction,
@@ -75,7 +75,7 @@ describe('Multisig', () => {
                 deployMultisigFixtureOneAdmin
             );
             return expect(
-                multisig.init([admin.address, ZERO_ADDRESS], 1, MULTISIG_TTL_DEFAULT)
+                multisig.init([admin.address, ethers.constants.AddressZero], 1, MULTISIG_TTL_DEFAULT)
             ).be.rejectedWith('zero address');
         });
 
@@ -444,7 +444,7 @@ describe('Multisig', () => {
             await expectSubmitTransaction(
                 multisig,
                 admin,
-                multisig.interface.encodeFunctionData('addAdmin', [ZERO_ADDRESS]),
+                multisig.interface.encodeFunctionData('addAdmin', [ethers.constants.AddressZero]),
                 BigNumber.from(0),
                 startTxId
             );
@@ -625,7 +625,7 @@ describe('Multisig', () => {
             await expect(
                 multisig
                     .connect(admin)
-                    .submitTransaction(ZERO_ADDRESS, 0, setQuorumEncode(multisig))
+                    .submitTransaction(ethers.constants.AddressZero, 0, setQuorumEncode(multisig))
             ).to.be.revertedWith('zero address');
         });
 
@@ -667,7 +667,7 @@ describe('Multisig', () => {
             await expectSubmitTransaction(
                 multisig,
                 admin,
-                ZERO_ADDRESS,
+                ethers.constants.AddressZero,
                 BigNumber.from(0),
                 startTxId
             );
